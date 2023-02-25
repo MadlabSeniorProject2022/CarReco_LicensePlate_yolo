@@ -1,0 +1,6 @@
+roboflow
+torch 
+torchvision 
+torchaudio
+os
+opencv-python
