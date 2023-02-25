@@ -48,6 +48,6 @@ def run_flow (img_path):
       # Create a new directory because it does not exist
       os.makedirs("./plates")
     current_time = int(time.time()*10000)
-    cv2.imread(f'./plates/{current_time}.jpg', plate)
+    cv2.imwrite(f'./plates/{current_time}.jpg', plate)
     license_num = read_char(f'./plates/{current_time}.jpg')
     return license_num
