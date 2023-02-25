@@ -22,7 +22,7 @@ def find_plate (img_path):
   result = license_plate_model(img_path)
   coor = result.xyxy[0]
   if len(coor) == 0:
-     return None
+     return 404
   
   xmin = min([i[1] for i in coor])
   xmax = max([i[3] for i in coor])
@@ -32,7 +32,7 @@ def find_plate (img_path):
   return crop_img
 
 def read_char (img_path):
-    res = license_plate_model.predict(img_path, confidence=60, overlap=30).json()["predictions"] #get prediction
+    res = character_segmentation_model.predict(img_path, confidence=60, overlap=30).json()["predictions"] #get prediction
     res.sort(key=lambda x: x["x"])
     result_test = ""
     for c in res:
@@ -41,7 +41,7 @@ def read_char (img_path):
 
 def run_flow (img_path):
     plate = find_plate(img_path)
-    if plate == None:
+    if type(plate) == int:
         return "ไม่พบป้ายทะเบียน"
     isExist = os.path.exists("./plates")
     if not isExist:
