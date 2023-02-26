@@ -70,7 +70,7 @@ def read_char (img_path):
 def run_flow (img_path):
     plate = find_plate(img_path)
     if type(plate) == int:
-        return "ไม่พบป้ายทะเบียน"
+        return ("ไม่พบป้ายทะเบียน", None)
     isExist = os.path.exists("./plates")
     if not isExist:
       # Create a new directory because it does not exist
@@ -80,5 +80,5 @@ def run_flow (img_path):
     plate_img_path = cloud_image('images-bucks', f'./plates/{current_time}.jpg', f'{current_time}-plate.jpg')
     license_num = read_char(f'./plates/{current_time}.jpg')
     if license_num == "":
-       "ไม่สามารถอ่านเลขทะเบียนได้"
+       license_num = "ไม่สามารถอ่านเลขทะเบียนได้"
     return (license_num, plate_img_path)
