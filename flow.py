@@ -62,8 +62,22 @@ def find_plate (img_path):
 def read_char (img_path):
     res = character_segmentation_model.predict(img_path, confidence=80, overlap=30).json()["predictions"] #get prediction
     res.sort(key=lambda x: x["x"])
-    result_test = ""
+    accepted_res = []
+    candidate = []
     for c in res:
+        #candidate.append(c)
+        if len(candidate) > 0:
+            if c["x"] > candidate[-1]["x"] + (candidate[-1]["width"]/2):
+                conf = [i["confidence"] for i in candidate]
+                index = conf.index(max(conf))
+                accepted_res.append(candidate[index])
+                candidate.clear()
+        candidate.append(c)
+    conf = [i["confidence"] for i in candidate]
+    index = conf.index(max(conf))
+    accepted_res.append(candidate[index])
+    result_test = ""
+    for c in accepted_res:
        result_test = result_test + char_map[c["class"]]
     return result_test
 
