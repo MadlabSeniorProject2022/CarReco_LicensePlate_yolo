@@ -5,6 +5,9 @@ from roboflow import Roboflow
 import json
 import time
 
+from google.cloud import storage
+
+
 # Load License plate Model
 license_plate_model = torch.hub.load('WongKinYiu/yolov7', 'custom', 'LPD150.pt', force_reload=True, trust_repo=True)
 
@@ -16,6 +19,31 @@ character_segmentation_model = project.version(1).model
 # Load Json for character mapping
 with open('char_map.json') as json_file:
     char_map = json.load(json_file)
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r'./carrgclassification-857e3c375cdd.json'
+
+def upload_cs_file(bucket_name, source_file_name, destination_file_name): 
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    blob = bucket.blob(destination_file_name)
+    blob.upload_from_filename(source_file_name)
+
+import datetime
+
+def get_cs_file_url(bucket_name, file_name, expire_in=datetime.datetime.now() + datetime.timedelta(4000)): 
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    url = bucket.blob(file_name).generate_signed_url(expire_in)
+
+    return url
+
+def cloud_image (bucket_name, source_file_name, destination_file_name):
+    upload_cs_file(bucket_name, source_file_name, destination_file_name)
+    url = get_cs_file_url(bucket_name, destination_file_name)
+    return url
 
 def find_plate (img_path):
   img = cv2.imread(img_path)
@@ -32,7 +60,7 @@ def find_plate (img_path):
   return crop_img
 
 def read_char (img_path):
-    res = character_segmentation_model.predict(img_path, confidence=60, overlap=30).json()["predictions"] #get prediction
+    res = character_segmentation_model.predict(img_path, confidence=80, overlap=30).json()["predictions"] #get prediction
     res.sort(key=lambda x: x["x"])
     result_test = ""
     for c in res:
@@ -49,5 +77,6 @@ def run_flow (img_path):
       os.makedirs("./plates")
     current_time = int(time.time()*10000)
     cv2.imwrite(f'./plates/{current_time}.jpg', plate)
+    plate_img_path = cloud_image('images-bucks', f'./plates/{current_time}.jpg', f'{current_time}-plate.jpg')
     license_num = read_char(f'./plates/{current_time}.jpg')
-    return license_num
+    return (license_num, plate_img_path)
