@@ -79,4 +79,6 @@ def run_flow (img_path):
     cv2.imwrite(f'./plates/{current_time}.jpg', plate)
     plate_img_path = cloud_image('images-bucks', f'./plates/{current_time}.jpg', f'{current_time}-plate.jpg')
     license_num = read_char(f'./plates/{current_time}.jpg')
+    if license_num == "":
+       "ไม่สามารถอ่านเลขทะเบียนได้"
     return (license_num, plate_img_path)
