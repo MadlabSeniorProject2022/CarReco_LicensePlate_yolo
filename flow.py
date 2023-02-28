@@ -10,7 +10,7 @@ from google.cloud import storage
 
 # Load License plate Model
 license_plate_model = torch.hub.load('WongKinYiu/yolov7', 'custom', 'LPD150.pt', force_reload=True, trust_repo=True)
-
+license_plate_model.conf = 0.65
 # Load Character Segmentation Model From Roboflow
 rf = Roboflow(api_key="aCtlUV2bPblR04ocOyk5")
 project = rf.workspace().project("lru-license-plate")
