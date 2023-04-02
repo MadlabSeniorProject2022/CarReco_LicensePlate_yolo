@@ -20,7 +20,7 @@ character_segmentation_model = project.version(1).model
 with open('char_map.json') as json_file:
     char_map = json.load(json_file)
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r'./carrgclassification-857e3c375cdd.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r'path_for_google_cloud_key_json'
 
 def upload_cs_file(bucket_name, source_file_name, destination_file_name): 
     storage_client = storage.Client()
